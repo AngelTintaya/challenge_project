@@ -1,5 +1,5 @@
 # challenge_project
-This is a project to create an API REST to load CSV data into a Database
+This is a project to create an API REST to load CSV data into a Database.
 
 Technologies used in the project:
 - Flask
@@ -9,15 +9,15 @@ Technologies used in the project:
 - Git Flow
 
 Directories:
-- static: Contains data that were uploaded to the webpage
-- templates: Contains HTML that will let us upload files
-- schemas: (Not loaded). Contains the database
-- venv: (Not loaded). Contains the virtual environment
+- static: Contains data that were uploaded to the webpage.
+- templates: Contains HTML that will let us upload files.
+- schemas: (Not loaded). Contains the database.
+- venv: (Not loaded). Contains the virtual environment.
 Files:
 - create_tables.py: Will let us drop and create tables to the database.
-- docker-compose.yaml: Will let us create a MySQL Database and have it running using containers
-- Dockerfile: Contains the image used for MySQL
-- main.py: Contains the script of the API Rest
-- requirements.txt: Contains all libraries that will be needed to execute the project
-- test.py: Script to test some features for the project
-- version.txt: To identify the current version of the project
+- docker-compose.yaml: Will let us create a MySQL Database and have it running using containers.
+- Dockerfile: Contains the image used for MySQL.
+- main.py: Contains the script of the API Rest.
+- requirements.txt: Contains all libraries that will be needed to execute the project.
+- test.py: Script to test some features for the project.
+- version.txt: To identify the current version of the project.
