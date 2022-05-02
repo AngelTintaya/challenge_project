@@ -20,3 +20,9 @@ export CPPFLAGS="-I/usr/local/opt/openssl/include"
 pip install mysqlclient
 pip install mysql
 pip install mysql-connector
+
+Files for Creating Database:
+- schemas
+- create_tables.py
+- docker-compose.yaml
+- Dockerfile
