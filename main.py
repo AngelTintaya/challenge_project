@@ -4,7 +4,7 @@ import configparser
 import pandas as pd
 import mysql.connector
 from werkzeug.utils import secure_filename
-from sqlalchemy import create_engine
+import sqlalchemy as db
 
 
 chunksize = 1000
@@ -21,7 +21,7 @@ passwd = db_pass
 database = 'db_company'
 
 # Engine from sqlalchemy
-engine = create_engine(f'mysql+mysqlconnector://{user}:{db_pass}@{host}:{port}/{database}', echo=False)
+engine = db.create_engine(f'mysql+mysqlconnector://{user}:{db_pass}@{host}:{port}/{database}', echo=False)
 '''
 # Connecting to the database
 mydb = mysql.connector.connect(
@@ -70,6 +70,45 @@ def upload_files():
             parse_csv(file_path)
         # save the file
     return redirect(url_for('index'))
+
+
+@app.route("/employee_per_job", methods=['GET'])
+def report_employee():
+    connection = engine.connect()
+    metadata = db.MetaData()
+    jobs = db.Table('jobs', metadata, autoload=True, autoload_with=engine)
+    departments = db.Table('departments', metadata, autoload=True, autoload_with=engine)
+    hired_employees = db.Table('hired_employees', metadata, autoload=True, autoload_with=engine)
+
+    # Equivalent to 'SELECT * FROM census'
+    query = db.select([jobs])
+    ResultProxy = connection.execute(query)
+    ResultSet = ResultProxy.fetchall()
+    print(ResultSet)
+
+    # Converting to dataframe
+    df = pd.DataFrame(ResultSet)
+
+    '''
+    SELECT
+    d.department,
+    j.job,
+    count(1) as Total
+    FROM hired_employees he
+    LEFT JOIN departments d on he.department_id = d.id
+    LEFT JOIN jobs j on he.job_id = j.id
+    GROUP BY
+    d.department,
+    j.job
+    '''
+    query = db.select([hired_employees, jobs])
+    query = query.select_from(hired_employees.join(jobs, hired_employees.columns.job_id == jobs.columns.id))
+    results = connection.execute(query).fetchall()
+    df = pd.DataFrame(results)
+    df.columns = results[0].keys()
+    print(df.head(5))
+
+    return {'message': 'Creating file'}
 
 
 def parse_csv(filepath):

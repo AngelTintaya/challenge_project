@@ -1,5 +1,5 @@
 # challenge_project
-This is a project to creare an API REST to load CSV data into a Database
+This is a project to create an API REST to load CSV data into a Database
 
 - To execute docker compose:
 docker-compose up -d
@@ -8,7 +8,8 @@ docker-compose ps
 
 If we need to re-launch docker:
 - list all docker docker ps -a
-- 
+- Remove current docker: docker rm -fv [docker_id]
+- Turn down docker compose: docker-compose down
 
 Installing MySQL Library in Mac M1:
 
