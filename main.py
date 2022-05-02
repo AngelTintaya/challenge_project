@@ -74,41 +74,34 @@ def upload_files():
 
 @app.route("/employee_per_job", methods=['GET'])
 def report_employee():
-    connection = engine.connect()
-    metadata = db.MetaData()
-    jobs = db.Table('jobs', metadata, autoload=True, autoload_with=engine)
-    departments = db.Table('departments', metadata, autoload=True, autoload_with=engine)
-    hired_employees = db.Table('hired_employees', metadata, autoload=True, autoload_with=engine)
-
-    # Equivalent to 'SELECT * FROM census'
-    query = db.select([jobs])
-    ResultProxy = connection.execute(query)
-    ResultSet = ResultProxy.fetchall()
-    print(ResultSet)
-
-    # Converting to dataframe
-    df = pd.DataFrame(ResultSet)
-
-    '''
+    sql = """
     SELECT
     d.department,
     j.job,
-    count(1) as Total
+    SUM(CASE WHEN MONTH(STR_TO_DATE(he.datetime,'%Y-%m-%dT%TZ')) BETWEEN 1 AND 3 THEN 1 ELSE 0 END) AS Q1,
+    SUM(CASE WHEN MONTH(STR_TO_DATE(he.datetime,'%Y-%m-%dT%TZ')) BETWEEN 4 AND 6 THEN 1 ELSE 0 END) AS Q2,
+    SUM(CASE WHEN MONTH(STR_TO_DATE(he.datetime,'%Y-%m-%dT%TZ')) BETWEEN 7 AND 9 THEN 1 ELSE 0 END) AS Q3,
+    SUM(CASE WHEN MONTH(STR_TO_DATE(he.datetime,'%Y-%m-%dT%TZ')) BETWEEN 10 AND 12 THEN 1 ELSE 0 END) AS Q4
     FROM hired_employees he
     LEFT JOIN departments d on he.department_id = d.id
     LEFT JOIN jobs j on he.job_id = j.id
+    WHERE 1 = 1
+    AND YEAR(STR_TO_DATE(he.datetime,'%Y-%m-%dT%TZ')) = 2021
     GROUP BY
     d.department,
     j.job
-    '''
-    query = db.select([hired_employees, jobs])
-    query = query.select_from(hired_employees.join(jobs, hired_employees.columns.job_id == jobs.columns.id))
-    results = connection.execute(query).fetchall()
-    df = pd.DataFrame(results)
-    df.columns = results[0].keys()
-    print(df.head(5))
+    ORDER BY d.department DESC, j.job desc
+    """
+    df = pd.read_sql(sql, con=engine)
 
-    return {'message': 'Creating file'}
+    # Converting all float results to int
+    float_col = df.select_dtypes(include=['float64'])  # This will select float columns only
+    for col in float_col.columns.values:
+        df[col] = df[col].astype('int64')
+
+    # Other options: empty, list, records. Last one return list
+
+    return df.to_dict('index')
 
 
 def parse_csv(filepath):
