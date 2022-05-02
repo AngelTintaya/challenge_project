@@ -6,6 +6,10 @@ docker-compose up -d
 - Verificar que se haya levantado el docker-compose:
 docker-compose ps
 
+If we need to re-launch docker:
+- list all docker docker ps -a
+- 
+
 Installing MySQL Library in Mac M1:
 
 - Execute the command (Need to have homebrew)
