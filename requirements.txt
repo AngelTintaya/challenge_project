@@ -1,0 +1,7 @@
+mysql==0.0.3
+mysqlclient==2.1.0
+mysql-connector==2.2.9
+Flask==2.1.2
+pandas==1.4.2
+SQLAlchemy==1.4.36
+fastavro==1.4.11
