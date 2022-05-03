@@ -1,7 +1,7 @@
 import configparser
 import pandas as pd
 import sqlalchemy as db
-from fastavro import writer, reader, parse_schema
+from fastavro import writer, parse_schema
 import datetime
 import os
 
@@ -83,19 +83,28 @@ def save_avro(table_name, schema):
     sql = f"SELECT * FROM {table_name}"
     df = pd.read_sql(sql, con=engine)
 
-    # Converting all float results to int
-    float_col = df.select_dtypes(include=['float64'])  # This will select float columns only
-    for col in float_col.columns.values:
-        df[col] = df[col].astype('int64')
+    if df.shape[0] != 0:
+        # Converting all float results to int
+        float_col = df.select_dtypes(include=['float64'])  # This will select float columns only
+        for col in float_col.columns.values:
+            df[col] = df[col].astype('int64')
 
-    parsed_schema = parse_schema(schema)
-    records = df.to_dict('records')
+        parsed_schema = parse_schema(schema)
+        records = df.to_dict('records')
 
-    file_path = f'{root_path}{table_name}_{today}.avro'
-    with open(file_path, 'wb') as out:
-        writer(out, parsed_schema, records)
+        file_path = f'{root_path}{table_name}_{today}.avro'
+        with open(file_path, 'wb') as out:
+            writer(out, parsed_schema, records)
 
-    return file_path.split('/')[-1]
+        file_name = file_path.split('/')[-1]
+    else:
+        # Returning last file
+        file_name = None
+        for file in os.listdir(root_path):
+            if table_name in file:
+                file_name = file
+
+    return file_name
 
 
 if __name__ == '__main__':

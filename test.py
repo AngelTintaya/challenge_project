@@ -144,8 +144,18 @@ def report_employee_5():
     df = pd.read_sql(sql, con=engine)
     print(df.to_dict('list'))
 
+
+def split_dataframe(df, chunk_size=1000):
+    chunks = list()
+    num_chunks = len(df) // chunk_size + 1
+    for i in range(num_chunks):
+        chunks.append(df[i*chunk_size:(i+1)*chunk_size])
+    return chunks
+
 # parseCSV('static/files/jobs.csv')
 # report_employee()
 # report_employee_2()
 # report_employee_3()
 report_employee_5()
+
+# split_dataframe(list(range(10)), 2)

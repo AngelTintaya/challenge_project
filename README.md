@@ -9,10 +9,12 @@ Technologies used in the project:
 - Git Flow
 
 Directories:
-- static: Contains data that were uploaded to the webpage.
+- static/files: Contains data that were uploaded to the webpage.
+- static/backups: Contains backup data
 - templates: Contains HTML that will let us upload files.
 - schemas: (Not loaded). Contains the database.
 - venv: (Not loaded). Contains the virtual environment.
+
 Files:
 - create_tables.py: Will let us drop and create tables to the database.
 - docker-compose.yaml: Will let us create a MySQL Database and have it running using containers.
@@ -21,3 +23,6 @@ Files:
 - requirements.txt: Contains all libraries that will be needed to execute the project.
 - test.py: Script to test some features for the project.
 - version.txt: To identify the current version of the project.
+- backup_tables.py: Script to back up tables
+- restore_tables: Script to restore tables
+- config.py: Let us centralize the engine connection
