@@ -4,7 +4,7 @@ import configparser
 import pandas as pd
 from werkzeug.utils import secure_filename
 import sqlalchemy as db
-import json
+from json2html import json2html
 
 
 chunksize = 1000
@@ -64,6 +64,34 @@ def upload_files():
 
 @app.route("/employee_per_job", methods=['GET'])
 def report_employee():
+    dict_employee = query_employee()
+
+    if not dict_employee:
+        return {'message': 'There is no data for this report'}
+
+    return jsonify(dict_employee)
+
+
+@app.route("/employee_per_job/report", methods=['GET'])
+def report_employee_html():
+    json_result = query_employee()
+
+    if not json_result:
+        return {'message': 'There is no data for this report'}
+
+    html_file = 'report_employee.html'
+    save_html(html_file, json_result)
+
+    return render_template(html_file)
+
+
+def save_html(html_file, json_file):
+    html_json = json2html.convert(json=json_file)
+    with open(f'./templates/{html_file}', 'w') as file:
+        file.write(str(html_json))
+
+
+def query_employee():
     sql = """
     SELECT
     d.department,
@@ -80,7 +108,7 @@ def report_employee():
     GROUP BY
     d.department,
     j.job
-    ORDER BY d.department DESC, j.job desc
+    ORDER BY d.department ASC, j.job ASC
     """
     df = pd.read_sql(sql, con=engine)
 
@@ -91,11 +119,32 @@ def report_employee():
 
     # Other options: empty, list, records. Last one return list
 
-    return jsonify(df.to_dict('records'))
+    return df.to_dict('records')
 
 
 @app.route("/main_departments", methods=['GET'])
 def report_departments():
+    dict_departments = query_departments()
+
+    if not dict_departments:
+        return {'message': 'There is no data for this report'}
+    return jsonify(dict_departments)
+
+
+@app.route("/main_departments/report", methods=['GET'])
+def report_departments_html():
+    json_result = query_departments()
+
+    if not json_result:
+        return {'message': 'There is no data for this report'}
+
+    html_file = 'report_department.html'
+    save_html(html_file, json_result)
+
+    return render_template(html_file)
+
+
+def query_departments():
     sql = """
     SELECT
     he.department_id as id,
@@ -130,7 +179,8 @@ def report_departments():
     for col in float_col.columns.values:
         df[col] = df[col].astype('int64')
 
-    return jsonify(df.to_dict('records'))
+    return df.to_dict('records')
+
 
 def parse_csv(filepath):
     file_name = filepath.split('/')[-1].split('.')[0]

@@ -3,7 +3,8 @@ import configparser
 import mysql.connector
 import sqlalchemy as db
 import pandas as pd
-
+import json
+from json2html import json2html
 
 # Getting secrets
 config = configparser.ConfigParser()
@@ -89,7 +90,7 @@ def report_employee_2():
     ORDER BY d.department DESC, j.job desc
     """
     df = pd.read_sql(sql, con=engine)
-    print(df[:5].to_dict('list'))
+    print(df[:5].to_dict('records'))  # List
 
 def report_employee_3():
     sql = """
@@ -107,7 +108,7 @@ def report_employee_3():
          ) dp
     """
     df = pd.read_sql(sql, con=engine)
-    print(df.to_dict('list'))
+    print(df.to_dict('records'))  # list
 
     print('End of retrieval')
 
@@ -124,7 +125,7 @@ def report_employee_4():
     he.department_id
     """
     df = pd.read_sql(sql, con=engine)
-    print(df.to_dict('list'))
+    print(df.to_dict('records'))  # list
 
 
 def report_employee_5():
@@ -142,7 +143,7 @@ def report_employee_5():
     hired DESC
     """
     df = pd.read_sql(sql, con=engine)
-    print(df.to_dict('list'))
+    return df.to_dict('records')  # list
 
 
 def split_dataframe(df, chunk_size=1000):
@@ -156,6 +157,13 @@ def split_dataframe(df, chunk_size=1000):
 # report_employee()
 # report_employee_2()
 # report_employee_3()
-report_employee_5()
+result = report_employee_5()
+
+html_json = json2html.convert(json= result)
+with open('./templates/report_1.html', 'w') as html_file:
+    html_file.write(str(html_json))
+    print('Json file converted successfully')
+print(result)
+print(html_json)
 
 # split_dataframe(list(range(10)), 2)

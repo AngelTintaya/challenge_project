@@ -5,3 +5,4 @@ Flask==2.1.2
 pandas==1.4.2
 SQLAlchemy==1.4.36
 fastavro==1.4.11
+json2html==1.3.0
