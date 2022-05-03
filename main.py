@@ -93,6 +93,44 @@ def report_employee():
     return df.to_dict('index')
 
 
+@app.route("/main_departments", methods=['GET'])
+def report_departments():
+    sql = """
+    SELECT
+    he.department_id as id,
+    d.department,
+    count(1) as hired
+    FROM hired_employees he
+    LEFT JOIN departments d on he.department_id = d.id
+    GROUP BY
+    he.department_id,
+    d.department
+    HAVING count(1) > (SELECT
+                        AVG(dp.total)
+                        FROM (
+                                SELECT
+                                he.department_id,
+                                count(1) as total
+                                FROM hired_employees he
+                                WHERE 1=1
+                                AND YEAR(STR_TO_DATE(he.datetime,'%Y-%m-%dT%TZ')) = 2021
+                                GROUP BY
+                                he.department_id
+                             ) dp
+                        )
+    ORDER BY
+    hired DESC
+    """
+
+    df = pd.read_sql(sql, con=engine)
+
+    # Converting all float results to int
+    float_col = df.select_dtypes(include=['float64'])  # This will select float columns only
+    for col in float_col.columns.values:
+        df[col] = df[col].astype('int64')
+
+    return df.to_dict('index')
+
 def parse_csv(filepath):
     file_name = filepath.split('/')[-1].split('.')[0]
 

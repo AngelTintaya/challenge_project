@@ -91,9 +91,61 @@ def report_employee_2():
     df = pd.read_sql(sql, con=engine)
     print(df[:5].to_dict('list'))
 
+def report_employee_3():
+    sql = """
+    SELECT
+    AVG(dp.total)
+    FROM (
+            SELECT
+            he.department_id,
+            count(1) as total
+            FROM hired_employees he
+            WHERE 1=1
+            AND YEAR(STR_TO_DATE(he.datetime,'%Y-%m-%dT%TZ')) = 2021
+            GROUP BY
+            he.department_id
+         ) dp
+    """
+    df = pd.read_sql(sql, con=engine)
+    print(df.to_dict('list'))
+
     print('End of retrieval')
 
 
+def report_employee_4():
+    sql = """
+    SELECT
+    he.department_id,
+    count(1) as total
+    FROM hired_employees he
+    WHERE 1=1
+    AND YEAR(STR_TO_DATE(he.datetime,'%Y-%m-%dT%TZ')) = 2021
+    GROUP BY
+    he.department_id
+    """
+    df = pd.read_sql(sql, con=engine)
+    print(df.to_dict('list'))
+
+
+def report_employee_5():
+    sql = """
+    SELECT
+    he.department_id as id,
+    d.department,
+    count(1) as hired
+    FROM hired_employees he
+    LEFT JOIN departments d on he.department_id = d.id
+    GROUP BY
+    he.department_id,
+    d.department
+    ORDER BY
+    hired DESC
+    """
+    df = pd.read_sql(sql, con=engine)
+    print(df.to_dict('list'))
+
 # parseCSV('static/files/jobs.csv')
 # report_employee()
-report_employee_2()
+# report_employee_2()
+# report_employee_3()
+report_employee_5()
