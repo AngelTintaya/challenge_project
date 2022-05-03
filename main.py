@@ -1,9 +1,10 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import os
 import configparser
 import pandas as pd
 from werkzeug.utils import secure_filename
 import sqlalchemy as db
+import json
 
 
 chunksize = 1000
@@ -90,7 +91,7 @@ def report_employee():
 
     # Other options: empty, list, records. Last one return list
 
-    return df.to_dict('index')
+    return jsonify(df.to_dict('records'))
 
 
 @app.route("/main_departments", methods=['GET'])
@@ -129,7 +130,7 @@ def report_departments():
     for col in float_col.columns.values:
         df[col] = df[col].astype('int64')
 
-    return df.to_dict('index')
+    return jsonify(df.to_dict('records'))
 
 def parse_csv(filepath):
     file_name = filepath.split('/')[-1].split('.')[0]
