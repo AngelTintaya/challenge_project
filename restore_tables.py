@@ -9,8 +9,6 @@ engine = config.generate_engine()  # Generating engine
 
 
 def main():
-    # Cleaning tables
-    create_tables.clean_tables()
 
     # Moving main table to be last
     files = os.listdir(root_path)
@@ -18,21 +16,33 @@ def main():
     first_files = [file for file in files if 'hired_employees' not in file]
     final_files = first_files + last_files
 
-    # Reading Avro Files
-    for file in final_files:
-        avro_records = list()
-        with open(f'{root_path}{file}', 'rb') as fo:
-            avro_reader = reader(fo)
-            for record in avro_reader:
-                avro_records.append(record)
+    if not final_files:
+        print('There are no backed tables to use in restoring process')
 
-        df_avro = pd.DataFrame(avro_records)
+    else:
+        print('Initializing restoration process')
+        # Cleaning tables
+        create_tables.clean_tables()
 
-        filename = file.rsplit('_', 1)[0]
+        # Reading Avro Files
+        for file in final_files:
+            avro_records = list()
+            with open(f'{root_path}{file}', 'rb') as fo:
+                avro_reader = reader(fo)
+                for record in avro_reader:
+                    avro_records.append(record)
 
-        # Saving dataframe by chunks of 1000
-        for df_chunk_data in split_dataframe(df_avro):
-            df_chunk_data.to_sql(name=filename, con=engine, if_exists='append', index=False)
+            df_avro = pd.DataFrame(avro_records)
+
+            filename = file.rsplit('_', 1)[0]
+
+            # Saving dataframe by chunks of 1000
+            for df_chunk_data in split_dataframe(df_avro):
+                df_chunk_data.to_sql(name=filename, con=engine, if_exists='append', index=False)
+
+            print(f'Table {filename} was successfully restored')
+
+        print('Restoration process finished')
 
 
 def split_dataframe(df, chunk_size=1000):

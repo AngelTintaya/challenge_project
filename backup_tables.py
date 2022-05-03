@@ -96,9 +96,12 @@ def save_avro(table_name, schema):
         with open(file_path, 'wb') as out:
             writer(out, parsed_schema, records)
 
+        print(f'Table {table_name} was backed up successfully')
+
         file_name = file_path.split('/')[-1]
     else:
         # Returning last file
+        print(f'Table {table_name} was not backed up, reason: Empty table')
         file_name = None
         for file in os.listdir(root_path):
             if table_name in file:
