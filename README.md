@@ -8,11 +8,12 @@ Technologies used in the project:
 - Docker Container
 - Git Flow
 - Avro
+- HTML
 
 Directories:
 - static/files: Contains data that were uploaded to the webpage.
-- static/backups: Contains backup data
-- templates: Contains HTML that will let us upload files.
+- static/backups: Contains backup data.
+- templates: Contains HTML pages used and generated in the project.
 - schemas: (Not loaded). Contains the database.
 - venv: (Not loaded). Contains the virtual environment.
 
@@ -27,3 +28,7 @@ Files:
 - backup_tables.py: Script to back up tables
 - restore_tables: Script to restore tables
 - config.py: Let us centralize the engine connection
+- static/backups/[filename].avro: Tables that were backed up.
+- templates/index.html: Start page, it will let us upload data
+- templates/[reportname].html: HTML pages generated through the end point to visualize data.
+
