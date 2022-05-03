@@ -7,6 +7,7 @@ Technologies used in the project:
 - Python
 - Docker Container
 - Git Flow
+- Avro
 
 Directories:
 - static/files: Contains data that were uploaded to the webpage.
